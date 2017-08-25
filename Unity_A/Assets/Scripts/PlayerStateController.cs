@@ -13,12 +13,15 @@ public class PlayerStateController : MonoBehaviour
 		falling,
 		kill,
 		resurrect,
-		firingWeapon
+		firingWeapon,
+		_stateCount
 	}
-		
+
+	public static float[] stateDelayTimer = new float[(int)playerStates._stateCount];
+
 	public delegate void playerStateHandler(PlayerStateController.playerStates newState);
 	public static event playerStateHandler onStateChange;
-	
+
 	void LateUpdate () 
 	{
 		// 가로축의 현재 입력 상태를 알아내서 필요에 따라 플레이어 상태 변경을 전파한다.
@@ -41,6 +44,20 @@ public class PlayerStateController : MonoBehaviour
 		{
 			if(onStateChange != null)
 				onStateChange(PlayerStateController.playerStates.idle);
+		}
+
+		float jump = Input.GetAxis("Jump");
+		if(jump > 0.0f)
+		{
+			if(onStateChange != null)
+				onStateChange(PlayerStateController.playerStates.jump);
+		}
+
+		float firing = Input.GetAxis("Fire1");
+		if(firing > 0.0f)
+		{
+			if(onStateChange != null)
+				onStateChange(PlayerStateController.playerStates.firingWeapon);
 		}
 	}
 }
