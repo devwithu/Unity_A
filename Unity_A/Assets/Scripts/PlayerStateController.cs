@@ -12,7 +12,8 @@ public class PlayerStateController : MonoBehaviour
 		landing,
 		falling,
 		kill,
-		resurrect
+		resurrect,
+		firingWeapon
 	}
 		
 	public delegate void playerStateHandler(PlayerStateController.playerStates newState);

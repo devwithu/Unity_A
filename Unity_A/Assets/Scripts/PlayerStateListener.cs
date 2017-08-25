@@ -5,7 +5,8 @@ using System.Collections;
 public class PlayerStateListener : MonoBehaviour
 {         
 	public float playerWalkSpeed = 3f;
-	
+	public GameObject playerRespawnPoint = null;
+
 	private Animator playerAnimator = null;
 	private PlayerStateController.playerStates currentState = PlayerStateController.playerStates.idle;
     
@@ -71,11 +72,13 @@ public class PlayerStateListener : MonoBehaviour
 			case PlayerStateController.playerStates.falling:
 			break;              
 
-			case PlayerStateController.playerStates.kill:
+		case PlayerStateController.playerStates.kill:
+			onStateChange (PlayerStateController.playerStates.resurrect);
 			break;         
 
 			case PlayerStateController.playerStates.resurrect:
-			break;                   
+				onStateChange(PlayerStateController.playerStates.idle);
+			break;                  
 		}
 	}
     
@@ -119,7 +122,9 @@ public class PlayerStateListener : MonoBehaviour
 			break;         
 
 			case PlayerStateController.playerStates.resurrect:
-			break;                   
+				transform.position = playerRespawnPoint.transform.position;
+				transform.rotation = Quaternion.identity;
+			break;             
 		}
          
 		// 최종적으로 새로운 상태를 플레이어 오브젝트에 할당한다.
@@ -148,8 +153,30 @@ public class PlayerStateListener : MonoBehaviour
 			case PlayerStateController.playerStates.right:         
 				// 우측 이동에서 어떤 상태로든 넘어갈 수 있음
 				returnVal = true;              
-			break;                              
+			break;   
+		
+			case PlayerStateController.playerStates.kill:         
+				// kill 상태에서 넘어갈 수 있는 상태는 부활이다.
+				if(newState == PlayerStateController.playerStates.resurrect)
+					returnVal = true;
+				else
+					returnVal = false;
+			break;              
+
+			case PlayerStateController.playerStates. resurrect :
+				// 부활 상태에서 넘어갈 수 있는 상태는 idle 상태이다.
+				if(newState == PlayerStateController.playerStates.idle)
+					returnVal = true;
+				else
+					returnVal = false;                          
+			break;
 		}          
 		return returnVal;
+	}
+
+	public void hitDeathTrigger()
+	{
+		onStateChange(PlayerStateController.playerStates.kill);
+		Debug.Log ("hitdeath");
 	}
 }
